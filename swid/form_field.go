@@ -2,6 +2,7 @@ package swid
 
 import (
 	"image/color"
+	"math"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
@@ -111,7 +112,7 @@ func (r *formFieldRenderer) Destroy() {
 func (r *formFieldRenderer) Layout(size fyne.Size) {
 	insetPad := r.fieldInsetPad()
 	stackedLabelTextSize, _ := r.stackedLabelProps()
-	stackedlabelMinHeight := fyne.MeasureText(r.label.Text, stackedLabelTextSize, r.label.TextStyle).Height
+	stackedlabelMinHeight := float32(math.Round(float64(fyne.MeasureText(r.label.Text, stackedLabelTextSize, r.label.TextStyle).Height)))
 	r.labelBg.Move(fyne.NewPos(0, 0))
 	r.labelBg.Resize(fyne.NewSize(size.Width, stackedlabelMinHeight-theme.InputBorderSize()))
 
@@ -146,7 +147,7 @@ func (r *formFieldRenderer) MinSize() fyne.Size {
 	stackedLabelTextSize, _ := r.stackedLabelProps()
 	labelMin := fyne.MeasureText(r.label.Text, stackedLabelTextSize, r.label.TextStyle)
 	hintMin := r.hint.MinSize()
-	min.Height += labelMin.Height - theme.InputBorderSize()*2
+	min.Height += float32(math.Round(float64(labelMin.Height))) - theme.InputBorderSize()*2
 	min.Height += hintMin.Height
 	min.Width = fyne.Max(min.Width, theme.Padding()*4+labelMin.Width)
 	min.Width = fyne.Max(min.Width, theme.Padding()*4+hintMin.Width)
