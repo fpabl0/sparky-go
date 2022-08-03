@@ -349,3 +349,39 @@ func TestTextFormField_EmptyValidatorReset(t *testing.T) {
 	assert.NotNil(t, tf.validationError)
 	assert.Equal(t, emptyErr, tf.validationError)
 }
+
+func TestMultiLineTextFormField(t *testing.T) {
+	test.ApplyTheme(t, theme.LightTheme())
+	tf := NewMultiLineTextFormField("Description", "")
+	tf.Validator = func(s string) error {
+		if s == "wrong" {
+			return errors.New("wrong")
+		}
+		return nil
+	}
+	tf.Hint = "A hint text"
+
+	w := test.NewWindow(tf)
+	w.Resize(fyne.NewSize(130, 120))
+	defer w.Close()
+
+	t.Run("empty", func(t *testing.T) {
+		test.AssertImageMatches(t, "text_form_field/multiline_empty.png", w.Canvas().Capture())
+	})
+
+	t.Run("not_empty", func(t *testing.T) {
+		tf.SetText("Very long Paragraph")
+		test.AssertImageMatches(t, "text_form_field/multiline_not_empty.png", w.Canvas().Capture())
+	})
+
+	t.Run("focused", func(t *testing.T) {
+		w.Canvas().Focus(tf.textField)
+		defer w.Canvas().Focus(nil)
+		test.AssertImageMatches(t, "text_form_field/multiline_focused.png", w.Canvas().Capture())
+	})
+
+	t.Run("invalid", func(t *testing.T) {
+		tf.SetText("wrong")
+		test.AssertImageMatches(t, "text_form_field/multiline_invalid.png", w.Canvas().Capture())
+	})
+}

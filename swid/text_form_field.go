@@ -32,7 +32,7 @@ func NewTextFormField(label, initialText string) *TextFormField {
 	t.Label = label
 	t.Wrapping = fyne.TextTruncate
 	t.initialText = initialText
-	t.setupTextField()
+	t.setupTextField(false)
 	return t
 }
 
@@ -62,6 +62,17 @@ func NewMaskedTextFormField(label, initialText, mask, placeHolder string) *TextF
 	t := NewTextFormField(label, initialText)
 	t.Placeholder = placeHolder
 	t.textField.mask = []rune(mask)
+	return t
+}
+
+// NewMultiLineTextFormField creates a new special multiline text field for Forms.
+func NewMultiLineTextFormField(label, initialText string) *TextFormField {
+	t := &TextFormField{}
+	t.ExtendBaseFormField(t)
+	t.Label = label
+	t.Wrapping = fyne.TextWrapWord
+	t.initialText = initialText
+	t.setupTextField(true)
 	return t
 }
 
@@ -129,9 +140,10 @@ func (t *TextFormField) Validate() error {
 	return nil
 }
 
-func (t *TextFormField) setupTextField() {
+func (t *TextFormField) setupTextField(multiline bool) {
 	t.textField = NewTextField()
 	t.textField.Text = t.initialText
+	t.textField.MultiLine = multiline
 	t.textField.OnChanged = func(s string) {
 		if t.OnChanged != nil {
 			t.OnChanged(s)

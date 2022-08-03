@@ -204,9 +204,20 @@ func (r *formFieldRenderer) stackedLabelProps() (textSize float32, posY float32)
 	return theme.CaptionTextSize(), theme.InputBorderSize() * 2
 }
 
+func (r *formFieldRenderer) standardTextFieldWidgetHeight(tf *TextField) float32 {
+	charHeight := fyne.MeasureText("M", theme.TextSize(), tf.TextStyle)
+	return 4*theme.Padding() + charHeight.Height
+}
+
 func (r *formFieldRenderer) nonStackedLabelProps() (textSize float32, posY float32) {
 	textSize = theme.TextSize()
 	nonStackedMinHeight := fyne.MeasureText(r.label.Text, textSize, r.label.TextStyle).Height
+	if tf, ok := r.fieldWidget.(*TextField); ok {
+		stackedLabelTextSize, _ := r.stackedLabelProps()
+		stackedlabelMinHeight := float32(math.Round(float64(fyne.MeasureText(r.label.Text, stackedLabelTextSize, r.label.TextStyle).Height)))
+		ypos := stackedlabelMinHeight - 2*theme.InputBorderSize()
+		return textSize, (ypos + r.standardTextFieldWidgetHeight(tf) - theme.InputBorderSize() - nonStackedMinHeight) / 2
+	}
 	return textSize,
 		(r.MinSize().Height - theme.InputBorderSize() - r.hint.MinSize().Height - nonStackedMinHeight) / 2
 }
